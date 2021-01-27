@@ -1,11 +1,13 @@
+# -*- coding: utf-8 -*-
 import math
 import copy
 
 
 class Node:
-    def __init__(self, racks_positions, request_rack, capacity, parent_node=None):
+    # 当前货架所处的位置，机器人申请打开的巷道，这个区域内一共有多少条巷道和此节点的父节点。
+    def __init__(self, racks_positions, request_alley, capacity, parent_node=None):
         self.racks_positions = racks_positions
-        self.request_rack = request_rack
+        self.request_alley = request_alley
         self.capacity = capacity
         self.parent_node = parent_node
         if self.parent_node is None:
@@ -15,15 +17,17 @@ class Node:
         self.h = self.getHeuristicCost()
         self.f = self.g + self.h
 
+    # 计算启发项。
     def getHeuristicCost(self):
         minimal_dist = math.inf
         for rack in range(self.capacity):
             if (rack not in self.racks_positions):
-                dist = abs(rack - self.request_rack)
+                dist = abs(rack - self.request_alley)
                 if (dist < minimal_dist):
                     minimal_dist = dist
         return minimal_dist
 
+    # 改变此节点的父节点。
     def resetParentNode(self, new_parent_node):
         if (new_parent_node != self.parent_node):
             self.parent_node = new_parent_node
@@ -33,19 +37,20 @@ class Node:
                 self.g = self.parent_node.g + 1
             self.f = self.g + self.h
 
+    # 检查此时能不能满足机器人的要求。
     def isValidSolution(self):
-        return self.racks_positions.count(self.request_rack) == 0
+        return self.racks_positions.count(self.request_alley) == 0
 
 
 class AStarAlgorithm:
     # 使用货架当前的排列，机器人请求进入的位置和可以容纳货架的数量进行初始化。
-    def __init__(self, initial_racks_positions, capacity, request_rack):
+    def __init__(self, initial_racks_positions, capacity, request_alley):
         self.capacity = capacity
-        self.request_rack = request_rack
+        self.request_alley = request_alley
         self.open_list = []
         self.closed_list = []
-        root_node = Node(initial_racks_positions,
-                         self.request_rack, self.capacity)
+        root_node = Node(initial_racks_positions, self.request_alley,
+                         self.capacity)
         self.open_list.append(root_node)
 
     def findSolution(self):
@@ -100,12 +105,12 @@ class AStarAlgorithm:
             if (rack - 1 >= 0 and node.racks_positions.count(rack-1) == 0):
                 new_racks_positions = copy.deepcopy(node.racks_positions)
                 new_racks_positions[i] = rack-1
-                neighbors.append(Node(new_racks_positions, self.request_rack, self.capacity,
+                neighbors.append(Node(new_racks_positions, self.request_alley, self.capacity,
                                       parent_node=node))
             # 如果可以将它向右移动一步则生成一个新的neighbor节点。
             if (rack + 1 < node.capacity and node.racks_positions.count(rack+1) == 0):
                 new_racks_positions = copy.deepcopy(node.racks_positions)
                 new_racks_positions[i] = rack+1
-                neighbors.append(Node(new_racks_positions, self.request_rack, self.capacity,
+                neighbors.append(Node(new_racks_positions, self.request_alley, self.capacity,
                                       parent_node=node))
         return neighbors

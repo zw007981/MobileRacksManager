@@ -2,6 +2,7 @@
 
 
 class RacksManager:
+    # 这个区域可容纳的移动货架上限，当前移动货架的数目。
     def __init__(self, capacity, num_racks):
         # 显然的可容纳的货架数量大于现有货架的数量同时现有货架的数量不小于0.
         assert (capacity > num_racks and num_racks >= 0)
