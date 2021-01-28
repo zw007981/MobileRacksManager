@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from racks_manager import *
-from A_star import *
+from include.A_star import AStarAlgorithm
+from include.racks_manager import RacksManager
 
 if __name__ == "__main__":
     # 这个区域可容纳的移动货架上限，当前移动货架的数目。
